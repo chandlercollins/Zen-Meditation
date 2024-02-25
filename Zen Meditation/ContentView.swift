@@ -61,6 +61,9 @@ struct ContentView: View {
                         Text("Third")
                             .foregroundColor(sectionColor(section: 3))
                     }
+                    // Apply transition here for the section indicators
+                                        .transition(.opacity)
+                                        .animation(.easeInOut, value: hasTimerStarted)
                 }
             }
             .padding()

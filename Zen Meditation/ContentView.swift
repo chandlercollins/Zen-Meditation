@@ -54,6 +54,8 @@ struct ContentView: View {
                 .clipShape(Capsule())
             }
             .padding()
+            .navigationTitle("Zen") // Set the title
+            .navigationBarTitleDisplayMode(.inline) // Ensure the title is displayed inline for left alignment
             .navigationBarItems(trailing: Button(action: {
                 self.showMenu.toggle() // Toggle the side menu visibility
             }) {
@@ -61,8 +63,7 @@ struct ContentView: View {
                     .imageScale(.large)
             })
             .sheet(isPresented: $showMenu) {
-                // Your menu content here
-                Text("Menu Items")
+                MenuView(showMenu: $showMenu)
             }
         }
     }
@@ -78,6 +79,34 @@ struct ContentView: View {
         let thirdDuration = countdownDuration / 3
         let currentSection = Int((countdownDuration - remainingTime) / thirdDuration) + 1
         return currentSection == section ? .blue : .gray
+    }
+}
+
+struct MenuView: View {
+    @Binding var showMenu: Bool // Binding to the parent view's showMenu state
+
+    var body: some View {
+        VStack {
+            HStack {
+                Button(action: {
+                    self.showMenu = false
+                }) {
+                    Image(systemName: "xmark")
+                        .imageScale(.large)
+                        .padding()
+                }
+                .alignmentGuide(.leading) { d in d[.leading] }
+                Spacer()
+            }
+            .padding(.leading)
+
+            Spacer()
+            Text("Menu Items")
+                .frame(maxWidth: .infinity)
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.white)
     }
 }
 

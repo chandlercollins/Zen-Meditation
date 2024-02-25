@@ -19,6 +19,8 @@ struct ContentView: View {
         NavigationView {
             VStack {
                 Text(timeString(time: remainingTime))
+                    .font(.largeTitle) // Makes the font size larger
+                    .fontWeight(.bold) // Makes the text bold
                     .onReceive(timer) { _ in
                         if self.remainingTime > 0 && self.timerIsRunning {
                             self.remainingTime -= 1
@@ -26,15 +28,8 @@ struct ContentView: View {
                             self.timerIsRunning = false
                         }
                     }
-                
-                HStack {
-                    Text("First")
-                        .foregroundColor(sectionColor(section: 1))
-                    Text("Second")
-                        .foregroundColor(sectionColor(section: 2))
-                    Text("Third")
-                        .foregroundColor(sectionColor(section: 3))
-                }
+                    .padding()
+
                 
                 Button(action: {
                     if self.timerIsRunning {
@@ -52,6 +47,17 @@ struct ContentView: View {
                 .background(timerIsRunning ? Color.blue : Color.green)
                 .foregroundColor(.white)
                 .clipShape(Capsule())
+                
+                .padding()
+                VStack {
+                    Text("First")
+                        .foregroundColor(sectionColor(section: 1))
+                    Text("Second")
+                        .foregroundColor(sectionColor(section: 2))
+                    Text("Third")
+                        .foregroundColor(sectionColor(section: 3))
+                }
+    
             }
             .padding()
             .navigationTitle("Zen") // Set the title
@@ -87,6 +93,7 @@ struct MenuView: View {
 
     var body: some View {
         VStack {
+            // Simulated Navigation Bar
             HStack {
                 Button(action: {
                     self.showMenu = false
@@ -95,10 +102,15 @@ struct MenuView: View {
                         .imageScale(.large)
                         .padding()
                 }
-                .alignmentGuide(.leading) { d in d[.leading] }
                 Spacer()
+                Text("Settings")
+                    .font(.headline)
+                    .padding()
+                Spacer()
+                Spacer() // Extra spacer for balancing the X button
             }
-            .padding(.leading)
+            
+            Divider()
 
             Spacer()
             Text("Menu Items")
@@ -109,6 +121,7 @@ struct MenuView: View {
         .background(Color.white)
     }
 }
+
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {

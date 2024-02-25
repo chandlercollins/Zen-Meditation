@@ -11,48 +11,60 @@ struct ContentView: View {
     @State private var countdownDuration: TimeInterval = 15 * 60
     @State private var remainingTime: TimeInterval = 15 * 60
     @State private var timerIsRunning = true
+    @State private var showMenu = false // To control the visibility of the side menu
     
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     var body: some View {
-        VStack {
-            Text(timeString(time: remainingTime))
-                .onReceive(timer) { _ in
-                    if self.remainingTime > 0 && self.timerIsRunning {
-                        self.remainingTime -= 1
-                    } else if self.remainingTime <= 0 {
+        NavigationView {
+            VStack {
+                Text(timeString(time: remainingTime))
+                    .onReceive(timer) { _ in
+                        if self.remainingTime > 0 && self.timerIsRunning {
+                            self.remainingTime -= 1
+                        } else if self.remainingTime <= 0 {
+                            self.timerIsRunning = false
+                        }
+                    }
+                
+                HStack {
+                    Text("First")
+                        .foregroundColor(sectionColor(section: 1))
+                    Text("Second")
+                        .foregroundColor(sectionColor(section: 2))
+                    Text("Third")
+                        .foregroundColor(sectionColor(section: 3))
+                }
+                
+                Button(action: {
+                    if self.timerIsRunning {
                         self.timerIsRunning = false
+                    } else {
+                        if self.remainingTime <= 0 {
+                            self.remainingTime = self.countdownDuration
+                        }
+                        self.timerIsRunning = true
                     }
+                }) {
+                    Text(timerIsRunning ? "Pause" : (remainingTime <= 0 ? "Restart" : "Resume"))
                 }
-            Button(action: {
-                if self.timerIsRunning {
-                    self.timerIsRunning = false
-                } else {
-                    if self.remainingTime <= 0 {
-                        self.remainingTime = self.countdownDuration
-                    }
-                    self.timerIsRunning = true
-                }
+                .padding()
+                .background(timerIsRunning ? Color.blue : Color.green)
+                .foregroundColor(.white)
+                .clipShape(Capsule())
+            }
+            .padding()
+            .navigationBarItems(trailing: Button(action: {
+                self.showMenu.toggle() // Toggle the side menu visibility
             }) {
-                Text(timerIsRunning ? "Pause" : (remainingTime <= 0 ? "Restart" : "Resume"))
+                Image(systemName: "line.horizontal.3") // Hamburger menu icon
+                    .imageScale(.large)
+            })
+            .sheet(isPresented: $showMenu) {
+                // Your menu content here
+                Text("Menu Items")
             }
-            .padding()
-            .background(timerIsRunning ? Color.blue : Color.green)
-            .foregroundColor(.white)
-            .clipShape(Capsule())
-            
-            // Icons for each third of the timer
-            HStack {
-                Text("First")
-                    .foregroundColor(currentThird() == 1 ? .blue : .gray)
-                Text("Second")
-                    .foregroundColor(currentThird() == 2 ? .blue : .gray)
-                Text("Third")
-                    .foregroundColor(currentThird() == 3 ? .blue : .gray)
-            }
-            .padding()
         }
-        .padding()
     }
     
     func timeString(time: TimeInterval) -> String {
@@ -61,16 +73,11 @@ struct ContentView: View {
         return String(format: "%02i:%02i", minutes, seconds)
     }
     
-    // Determine the current third of the timer
-    func currentThird() -> Int {
+    // Determine the section color based on the remaining time
+    func sectionColor(section: Int) -> Color {
         let thirdDuration = countdownDuration / 3
-        if remainingTime > 2 * thirdDuration {
-            return 1 // First third
-        } else if remainingTime > thirdDuration {
-            return 2 // Second third
-        } else {
-            return 3 // Final third
-        }
+        let currentSection = Int((countdownDuration - remainingTime) / thirdDuration) + 1
+        return currentSection == section ? .blue : .gray
     }
 }
 
